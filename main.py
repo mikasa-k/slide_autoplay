@@ -1,5 +1,5 @@
 # サークル紹介スライドランチャー GUI
-#nuitka --mingw64 --follow-imports --standalone --onefile --windows-console-mode=disable --enable-plugin=tk-inter --windows-icon-from-ico="favicon.ico" play_slides_control.py
+#nuitka --mingw64 --follow-imports --standalone --onefile --windows-console-mode=disable --enable-plugin=tk-inter --windows-icon-from-ico="favicon.ico" main.py
 import tkinter
 import os
 import play_slides
@@ -22,7 +22,7 @@ class SlideCtl:
 			except:
 				pass
 		self.title = tkinter.Label(root,text=TITLE,bg=BG,fg="#0cf",anchor="w",font=("",32))
-		dsc = tkinter.Label(root,text="一度再生すると、途中で停止出来ません。\nEscキーで閉じます。",bg=BG,fg=FC,font=("",24))
+		dsc = tkinter.Label(root,text="一度再生すると、途中で停止出来ません。キー長押しや連打はフリーズします。\n開始前ならこのウィンドウはEscキーで閉じます。",bg=BG,fg=FC,font=("",24))
 		self.play_btn = tkinter.Button(root,text="Play",font=("",24),command=self.play)
 		self.title.place(x=10,y=10)
 		dsc.place(x=20,y=60)

@@ -1,6 +1,12 @@
 __*
+*.build
+*.dist
+*.exe
 *.csv
 *.ppt
 *.pptx
 *.odp
 *.mp4
+*.ico
+*.png
+*.jpg
