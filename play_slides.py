@@ -8,6 +8,9 @@ import winreg
 #絶対パス取得
 d_root = os.path.abspath(os.path.dirname(sys.argv[0]))
 
+#フリーズ対策
+is_wait = False
+
 #実行ソフトの検出
 def find_program_file(program_name):
 	name = program_name.lower()
@@ -39,15 +42,18 @@ def find_program_file(program_name):
 			pass
 	return False
 def play(file_name, cmd):
+	global is_wait
 	if cmd[0] == False:
 		print("can not open %s"% file_name)
 		return False
 	try:
 		print("EXECUTE:%s"% " ".join(cmd))
+		is_wait = True
 		p = subprocess.Popen(cmd)
 		p.wait()
 	except:
 		pass
+	is_wait = False
 	return True
 def load(d_root):
 	programs = {}
@@ -64,6 +70,12 @@ def load(d_root):
 		fp = open(playlist_file, "r", encoding="utf-8")
 		for i in fp.readlines():
 			l = i.strip().split(",")
+			for i in range(len(l)):
+				if l[i].startswith('"'):
+					l[i] = l[i][1:]
+				if l[i].endswith('"'):
+					l[i] = l[i][:len(l[i])-1]
+				l[i] = l[i].strip()
 			if l != []:
 				playlist.append(l)
 		fp.close()
@@ -74,17 +86,16 @@ def load(d_root):
 		n = l[1].strip()
 		c = [f]
 		if f.endswith(".mp4"):
-			c = [programs["vlc"], "--start-paused", "--play-and-exit", "--fullscreen", f]
+			c = [programs["vlc"], "--fullscreen", "--play-and-exit", f]
 		elif f.endswith(".ppt") or f.endswith(".pptx") or f.endswith("pptsx"):
 			c = [programs["powerpoint"], "/s", f]
 		elif f.endswith(".odp"):
 			c = [programs["libreoffice"], "--show", "--norestore", "--nodefault", f]
-		cmds.append([f, c])
+		cmds.append([f, c, n])
 	return cmds
-def play_from(s=0):
-	cmds = load(d_root)
-	for i in cmds[s:]:
-		play(*i)
 
 if __name__ == "__main__":
-	play_from()
+	cmds = load(d_root)
+	for i in cmds:
+		input(i[2]+"(Enter)")
+		play(i[0],i[1])
