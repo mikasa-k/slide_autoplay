@@ -2,19 +2,24 @@
 #nuitka --mingw64 --follow-imports --standalone --onefile --windows-console-mode=disable --enable-plugin=tk-inter --windows-icon-from-ico="favicon.ico" main.py
 import tkinter
 import os
+import threading
 import play_slides
 d_root = play_slides.d_root
 TITLE = "新入生ガイダンス サークル紹介"
 BG = "#fff"
 FC = "#111"
 class SlideCtl:
-	__slots__ = ("root","title","play_btn","start")
+	__slots__ = ("root","title","next_title","dsc","play_btn","cmds","start","thread","wait","is_wait")
 	def __init__(self):
 		root = tkinter.Tk()
 		root.attributes("-fullscreen", True)
 		root.config(bg=BG)
 		root.title(TITLE)
 		self.start = 0
+		self.wait = 10
+		self.is_wait = True
+		self.thread = None
+		self.cmds = play_slides.load(d_root)
 		i = play_slides.d_root+"/favicon.ico"
 		if os.path.isfile(i):
 			try:
@@ -22,20 +27,57 @@ class SlideCtl:
 			except:
 				pass
 		self.title = tkinter.Label(root,text=TITLE,bg=BG,fg="#0cf",anchor="w",font=("",32))
-		dsc = tkinter.Label(root,text="一度再生すると、途中で停止出来ません。キー長押しや連打はフリーズします。\n開始前ならこのウィンドウはEscキーで閉じます。",bg=BG,fg=FC,font=("",24))
-		self.play_btn = tkinter.Button(root,text="Play",font=("",24),command=self.play)
+		self.next_title = tkinter.Label(root,bg=BG,fg="#0bf",anchor="w",font=("",28))
+		self.dsc = tkinter.Label(root,text="ボタンを押して開始します",bg=BG,fg=FC,font=("",24))
+		self.play_btn = tkinter.Button(root,text="スタート",font=("",24),command=self.play)
 		self.title.place(x=10,y=10)
-		dsc.place(x=20,y=60)
+		self.dsc.place(x=20,y=60)
+		self.next_title.grid(row=1, column=0, sticky="")
 		self.play_btn.grid(row=0, column=0, sticky="")
 		root.grid_rowconfigure(0, weight=1)
 		root.grid_columnconfigure(0, weight=1)
+		if self.cmds == []:
+			self.next_title.config(text="再生するものがありません")
+		else:
+			self.next_title.config(text="次は、"+self.cmds[self.start][2])
+		self.increment_wait()
 		self.root = root
 		self.root.bind("<Return>", self.play)
-		self.root.bind("<Escape>", self.exit)
+		self.root.bind("<Control-Key-q>", self.exit)
 		self.root.mainloop()
 	def play(self, a=None):
-		play_slides.play_from(self.start)
-		self.exit()
+		if self.wait < 5:
+			self.dsc.config(text="5秒以上時間を置いてからボタンを押してください。")
+			if self.is_wait:
+				self.dsc.after(1000*(5-self.wait), self.play)
+				self.is_wait = False
+			return
+		if (self.thread and self.thread.is_alive()) or play_slides.is_wait:
+			self.dsc.config(text="ファイルが閉じるのを待っています...")
+			self.dsc.after(1000, self.play)
+			return
+		self.wait = 0
+		self.is_wait = True
+		if self.start < len(self.cmds):
+			self.play_btn.config(text="次へ")
+			i = self.cmds[self.start]
+			self.dsc.config(text=i[0].replace(d_root+"\\",""))
+			self.title.config(text=i[2])
+			self.thread = threading.Thread(target=play_slides.play, args=(i[0],i[1]))
+			self.thread.start()
+			self.start += 1
+			if self.start < len(self.cmds):
+				self.next_title.config(text="次は、"+self.cmds[self.start][2])
+			else:
+				self.next_title.config(text="終了です。")
+		else:
+			self.start = 0
+			self.title.config(text=TITLE)
+			self.dsc.config(text="全て再生し終えました。お疲れ様です。(Ctrl+Qで終了)")
+			self.play_btn.config(text="もう一度")
+	def increment_wait(self):
+		self.wait += 1
+		self.play_btn.after(1000, self.increment_wait)
 	def exit(self, a=None):
 		self.root.quit()
 if __name__ == "__main__":
