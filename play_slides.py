@@ -32,6 +32,10 @@ def find_program_file(program_name):
 		r"SOFTWARE\WOW6432Node\VideoLAN\VLC"]
 		n = r"\vlc.exe"
 		idr = "InstallDir"
+	elif name=="edge":
+		paths = [
+        r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe",
+        r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe"]
 	for p in paths:
 		try:
 			key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, p)
@@ -58,7 +62,7 @@ def play(file_name, cmd):
 def load(d_root):
 	programs = {}
 	cmds = []
-	for i in ["powerpoint","libreoffice","vlc"]:
+	for i in ["powerpoint","libreoffice","vlc","edge"]:
 		p = find_program_file(i)
 		if p == False:
 			print("WARNING:%s is not installed."% i)
@@ -91,6 +95,13 @@ def load(d_root):
 			c = [programs["powerpoint"], "/s", f]
 		elif f.endswith(".odp"):
 			c = [programs["libreoffice"], "--show", "--norestore", "--nodefault", f]
+		elif f.endswith(".pdf"):
+			if programs["edge"]:
+				c = [programs["edge"], "--start-fullscreen", f]
+			else:
+				c = ["cmd", "/c", "start", "", f]
+		elif os.path.isfile(f):
+			c = ["cmd", "/c", "start", "", f]
 		cmds.append([f, c, n])
 	return cmds
 
