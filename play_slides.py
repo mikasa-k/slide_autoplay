@@ -88,7 +88,7 @@ def load(d_root):
 	for l in playlist:
 		f = d_root+"\\"+l[0].strip()
 		n = l[1].strip()
-		c = [f]
+		c = [False]
 		if f.endswith(".mp4"):
 			c = [programs["vlc"], "--fullscreen", "--play-and-exit", f]
 		elif f.endswith(".ppt") or f.endswith(".pptx") or f.endswith("pptsx"):
