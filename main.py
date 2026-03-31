@@ -9,7 +9,7 @@ TITLE = "新入生ガイダンス サークル紹介"
 BG = "#fff"
 FC = "#111"
 class SlideCtl:
-	__slots__ = ("root","title","next_title","dsc","play_btn","cmds","start","thread","wait","is_wait")
+	__slots__ = ("root","title","next_title","dsc","play_btn","back_btn","cmds","start","thread","wait","is_wait")
 	def __init__(self):
 		root = tkinter.Tk()
 		root.attributes("-fullscreen", True)
@@ -26,16 +26,18 @@ class SlideCtl:
 				root.iconbitmap(default=i)
 			except:
 				pass
+		width = root.winfo_screenwidth()
+		height = root.winfo_screenheight()
 		self.title = tkinter.Label(root,text=TITLE,bg=BG,fg="#0cf",anchor="w",font=("",32))
 		self.next_title = tkinter.Label(root,bg=BG,fg="#0bf",anchor="w",font=("",28))
 		self.dsc = tkinter.Label(root,text="ボタンを押して開始します",bg=BG,fg=FC,font=("",24))
 		self.play_btn = tkinter.Button(root,text="スタート",font=("",24),command=self.play)
+		self.back_btn = tkinter.Button(root,text="Redo",font=("",24),command=self.replay)
 		self.title.place(x=10,y=10)
 		self.dsc.place(x=20,y=60)
-		self.next_title.grid(row=1, column=0, sticky="")
-		self.play_btn.grid(row=0, column=0, sticky="")
-		root.grid_rowconfigure(0, weight=1)
-		root.grid_columnconfigure(0, weight=1)
+		self.next_title.place(x=15,y=height-80)
+		self.play_btn.place(x=width//2-150,y=height//2)
+		self.back_btn.place(x=width//2+50,y=height//2)
 		if self.cmds == []:
 			self.next_title.config(text="再生するものがありません")
 		else:
@@ -59,7 +61,7 @@ class SlideCtl:
 		self.wait = 0
 		self.is_wait = True
 		if self.start < len(self.cmds):
-			self.play_btn.config(text="次へ")
+			self.play_btn.config(text="次　へ")
 			i = self.cmds[self.start]
 			self.dsc.config(text=i[0].replace(d_root+"\\",""))
 			self.title.config(text=i[2])
@@ -75,6 +77,9 @@ class SlideCtl:
 			self.title.config(text=TITLE)
 			self.dsc.config(text="全て再生し終えました。お疲れ様です。(Ctrl+Qで終了)")
 			self.play_btn.config(text="もう一度")
+	def replay(self):
+		self.start = max(0, self.start-1)
+		self.play()
 	def increment_wait(self):
 		self.wait += 1
 		self.play_btn.after(1000, self.increment_wait)
