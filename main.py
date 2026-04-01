@@ -41,17 +41,17 @@ class SlideCtl:
 		if self.cmds == []:
 			self.next_title.config(text="再生するものがありません")
 		else:
-			self.next_title.config(text="次は、"+self.cmds[self.start][2])
+			self.next_title.config(text="次は、"+self.cmds[self.start][2]+" "+self.cmds[self.start][0].replace(d_root+"\\",""))
 		self.increment_wait()
 		self.root = root
 		self.root.bind("<Return>", self.play)
 		self.root.bind("<Control-Key-q>", self.exit)
 		self.root.mainloop()
 	def play(self, a=None):
-		if self.wait < 5:
-			self.dsc.config(text="5秒以上時間を置いてからボタンを押してください。")
+		if self.wait < 3:
+			self.dsc.config(text="3秒以上時間を置いてからボタンを押してください。")
 			if self.is_wait:
-				self.dsc.after(1000*(5-self.wait), self.play)
+				self.dsc.after(1000*(3-self.wait), self.play)
 				self.is_wait = False
 			return
 		if (self.thread and self.thread.is_alive()) or play_slides.is_wait:
@@ -69,7 +69,7 @@ class SlideCtl:
 			self.thread.start()
 			self.start += 1
 			if self.start < len(self.cmds):
-				self.next_title.config(text="次は、"+self.cmds[self.start][2])
+				self.next_title.config(text="次は、"+self.cmds[self.start][2]+" "+self.cmds[self.start][0].replace(d_root+"\\",""))
 			else:
 				self.next_title.config(text="終了です。")
 		else:

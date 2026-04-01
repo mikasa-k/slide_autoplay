@@ -86,11 +86,17 @@ def load(d_root):
 	else:
 		print("ERROR:%s is not found."% playlist_file)
 	for l in playlist:
-		f = d_root+"\\"+l[0].strip()
+		fn = l[0].strip()
+		f = d_root+"\\"+fn
 		n = l[1].strip()
 		c = [False]
-		if f.endswith(".mp4"):
-			c = [programs["vlc"], "--fullscreen", "--play-and-exit", f]
+		if fn.startswith("http://") or fn.startswith("https://"):
+			if programs["edge"]:
+				c = [programs["edge"], "--start-fullscreen", fn]
+			else:
+				c = ["cmd", "/c", "start", "", fn]
+		elif f.endswith(".mp4") or f.endswith(".mp3") or f.endswith(".mov"):
+			c = [programs["vlc"], "--start-paused", "--fullscreen", "--play-and-exit", f]
 		elif f.endswith(".ppt") or f.endswith(".pptx") or f.endswith("pptsx"):
 			c = [programs["powerpoint"], "/s", f]
 		elif f.endswith(".odp"):
