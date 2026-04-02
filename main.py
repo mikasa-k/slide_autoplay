@@ -6,7 +6,7 @@ import threading
 import play_slides
 d_root = play_slides.d_root
 TITLE = "新入生ガイダンス サークル紹介"
-BG = "#fff"
+BG = "#eff"
 FC = "#111"
 class SlideCtl:
 	__slots__ = ("root","title","next_title","dsc","play_btn","back_btn","cmds","start","thread","wait","is_wait")
@@ -20,7 +20,7 @@ class SlideCtl:
 		self.is_wait = True
 		self.thread = None
 		self.cmds = play_slides.load(d_root)
-		i = play_slides.d_root+"/favicon.ico"
+		i = d_root+"/favicon.ico"
 		if os.path.isfile(i):
 			try:
 				root.iconbitmap(default=i)
@@ -28,13 +28,19 @@ class SlideCtl:
 				pass
 		width = root.winfo_screenwidth()
 		height = root.winfo_screenheight()
-		self.title = tkinter.Label(root,text=TITLE,bg=BG,fg="#0cf",anchor="w",font=("",32))
-		self.next_title = tkinter.Label(root,bg=BG,fg="#0bf",anchor="w",font=("",28))
+		self.title = tkinter.Label(root,text=TITLE,bg=BG,fg="#0af",anchor="w",font=("",40))
+		self.next_title = tkinter.Label(root,bg=BG,fg="#0af",anchor="w",font=("",28))
 		self.dsc = tkinter.Label(root,text="ボタンを押して開始します",bg=BG,fg=FC,font=("",24))
 		self.play_btn = tkinter.Button(root,text="スタート",font=("",24),command=self.play)
 		self.back_btn = tkinter.Button(root,text="Redo",font=("",24),command=self.replay)
+		writer_file = "writer.txt"
+		if os.path.isfile(writer_file):
+			writer = tkinter.Label(root,bg=BG,fg=FC,font=("Arial",18))
+			writer.place(x=10,y=height//2+100)
+			with open(writer_file,"r",encoding="utf-8") as fp:
+				writer.config(text=fp.read())
 		self.title.place(x=10,y=10)
-		self.dsc.place(x=20,y=60)
+		self.dsc.place(x=20,y=70)
 		self.next_title.place(x=15,y=height-80)
 		self.play_btn.place(x=width//2-150,y=height//2)
 		self.back_btn.place(x=width//2+50,y=height//2)
