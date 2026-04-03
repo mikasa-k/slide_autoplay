@@ -33,7 +33,7 @@ class SlideCtl:
 		self.dsc = tkinter.Label(root,text="ボタンを押して開始します",bg=BG,fg=FC,font=("",24))
 		self.play_btn = tkinter.Button(root,text="スタート",font=("",24),command=self.play)
 		self.back_btn = tkinter.Button(root,text="Redo",font=("",24),command=self.replay)
-		writer_file = "writer.txt"
+		writer_file = d_root+"/writer.txt"
 		if os.path.isfile(writer_file):
 			writer = tkinter.Label(root,bg=BG,fg=FC,font=("Arial",18))
 			writer.place(x=10,y=height//2+100)
