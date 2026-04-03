@@ -98,7 +98,7 @@ def load(d_root):
 		elif f.endswith(".mp4") or f.endswith(".mp3") or f.endswith(".mov"):
 			c = [programs["vlc"], "--start-paused", "--fullscreen", "--play-and-exit", f]
 		elif f.endswith(".ppt") or f.endswith(".pptx") or f.endswith("pptsx"):
-			c = [programs["powerpoint"], "/s", f]
+			c = [programs["powerpoint"], f]
 		elif f.endswith(".odp"):
 			c = [programs["libreoffice"], "--show", "--norestore", "--nodefault", f]
 		elif f.endswith(".pdf"):
